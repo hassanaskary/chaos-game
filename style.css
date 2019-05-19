@@ -3,6 +3,12 @@ html, body {
     padding: 0;
 }
 
+body {
+    display: flex;
+    align-items: start;
+    flex-flow: row wrap;
+}
+
 canvas {
     display: block;
 }

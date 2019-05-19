@@ -1,23 +1,14 @@
 class sierpinskiTriangle {
     constructor() {
-        this.currentPoint = {
-            x: 0,
-            y: 0
-        };
-        this.vertices = [
-            {
-                x: 50/100 * width,
-                y: 25/100 * height
-            },
-            {
-                x: 25/100 * width, 
-                y: 75/100 * height
-            },
-            {
-                x: 75/100 * width,
-                y: 75/100 * height
-            }
-        ];
+        this.currentPoint = createVector(0, 0);
+        this.vertices = [];
+        for (let i = 0; i < 3; i++) {
+            let angle = i * TWO_PI / 3;
+            let v = p5.Vector.fromAngle(angle);
+            v.mult(width / 2.5);
+            v.add(width / 2.3, height / 2);
+            this.vertices.push(v);
+        }
     }
 
     setup() {
@@ -31,44 +22,24 @@ class sierpinskiTriangle {
 
     draw() {
         const choice = random(this.vertices);
-        this.currentPoint.x = (this.currentPoint.x + choice.x) / 2;
-        this.currentPoint.y = (this.currentPoint.y + choice.y) / 2;
+        let percent = 0.5;
+        this.currentPoint.x = lerp(this.currentPoint.x, choice.x, percent);
+        this.currentPoint.y = lerp(this.currentPoint.y, choice.y, percent);
         point(this.currentPoint.x, this.currentPoint.y);
     }
 }
 
 class sierpinskiHexagon {
     constructor() {
-        this.currentPoint = {
-            x: 0,
-            y: 0
-        };
-        this.vertices = [
-            {
-                x: 25/100 * width,
-                y: 30/100 * height 
-            },
-            {
-                x: 50/100 * width ,
-                y: 15/100 * height
-            },
-            {
-                x: 75/100 * width,
-                y: 30/100 * height
-            },
-            {
-                x: 25/100 * width,
-                y: 70/100 * height
-            },
-            {
-                x: 50/100 * width,
-                y: 85/100 * height
-            },
-            {
-                x: 75/100 * width,
-                y: 70/100 * height
-            }
-        ];
+        this.currentPoint = createVector(0, 0);
+        this.vertices = [];
+        for (let i = 0; i < 6; i++) {
+            let angle = i * TWO_PI / 6;
+            let v = p5.Vector.fromAngle(angle);
+            v.mult(width / 2.5);
+            v.add(width / 2, height / 2);
+            this.vertices.push(v);
+        }
     }
 
     setup() {
@@ -82,11 +53,9 @@ class sierpinskiHexagon {
 
     draw() {
         const choice = random(this.vertices);
-        this.currentPoint.x = (max(this.currentPoint.x, choice.x) -
-        min(this.currentPoint.x, choice.x)) / 4;
-        this.currentPoint.y = (max(this.currentPoint.y, choice.y) -
-        min(this.currentPoint.y, choice.y)) / 4;
-        console.log(this.currentPoint.x);
+        let percent = 0.65;
+        this.currentPoint.x = lerp(this.currentPoint.x, choice.x, percent);
+        this.currentPoint.y = lerp(this.currentPoint.y, choice.y, percent);
         point(this.currentPoint.x, this.currentPoint.y);
     }
 }
@@ -99,8 +68,13 @@ let hexagon;
 let carpet;
 
 function setup() {
-    createCanvas(400, 400);
-    background(220);
+    if(windowWidth > windowHeight) {
+        createCanvas(windowHeight, windowHeight);
+    } else {
+        createCanvas(windowWidth, windowWidth);
+    }
+    background(0);
+    const infoDiv = createDiv();
     const p = createP("Select a fractal to generate:");
     p.style("margin", "10px 10px 0px 10px");
     selectElement = createSelect();
@@ -110,27 +84,32 @@ function setup() {
     selectElement.option("Sierpinski Hexagon");
     selectElement.option("Sierpinski Carpet");
     selectElement.changed(changeSelection);
+    p.parent(infoDiv);
+    selectElement.parent(infoDiv);
     triangle = new sierpinskiTriangle();
     hexagon = new sierpinskiHexagon();
 }
 
 function draw() {
-    strokeWeight(3);
-    switch(selection) {
-        case "Sierpinski Triangle":
-            if(token == 1) {
-                triangle.setup();
-                token = 0;
-            }
-            triangle.draw();
-            break;
-        case "Sierpinski Hexagon":
-            if(token == 1) {
-                hexagon.setup();
-                token = 0;
-            }
-            hexagon.draw();
-            break;
+    strokeWeight(1);
+    stroke(255, 255, 255, 150);
+    for(let i = 0; i < 50; i++) {
+        switch(selection) {
+            case "Sierpinski Triangle":
+                if(token == 1) {
+                    triangle.setup();
+                    token = 0;
+                }
+                triangle.draw();
+                break;
+            case "Sierpinski Hexagon":
+                if(token == 1) {
+                    hexagon.setup();
+                    token = 0;
+                }
+                hexagon.draw();
+                break;
+        }
     }
 }
 
@@ -141,5 +120,5 @@ function changeSelection() {
 }
 
 function reset() {
-    background(220);
+    background(0);
 }
